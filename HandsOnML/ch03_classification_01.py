@@ -1,14 +1,15 @@
 from sklearn.datasets import fetch_openml
+import numpy as np
 
 # 3.1 MNIST
 # MNIST 데이터셋을 불러옴
 mnist = fetch_openml('mnist_784', version=1)
-print(mnist.keys())
+#print(mnist.keys())
 
 # MNIST 데이터셋은 28x28 픽셀 이미지 70,000개로 구성되어 있음
 X, y = mnist["data"].to_numpy(), mnist["target"].to_numpy()
-print(X.shape)
-print(y.shape)
+#print(X.shape)
+#print(y.shape)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -16,11 +17,11 @@ import matplotlib.pyplot as plt
 some_digit = X[0]
 some_digit_image = some_digit.reshape(28, 28)
 
-plt.imshow(some_digit_image, cmap=mpl.cm.binary)
-plt.axis("off")
-plt.show()
+# plt.imshow(some_digit_image, cmap=mpl.cm.binary)
+# plt.axis("off")
+# plt.show()
 
-print(y[0])
+# print(y[0])
 
 # y는 문자열이므로 정수로 변환
 y = y.astype(np.uint8)
@@ -30,3 +31,33 @@ y = y.astype(np.uint8)
 X_train, X_test, y_train, y_test = X[:60000], X[60000:], y[:60000], y[60000:]
 
 # 3.2 이진 분류기 : 5와 5가 아님으로 분류하는 분류기
+y_train_5 = (y_train == 5)  # 5는 True, 다른 숫자는 False
+#print (y_train_5)
+y_test_5 = (y_test == 5)
+#print (y_test_5)
+
+from sklearn.linear_model import SGDClassifier
+
+sgd_clf = SGDClassifier(random_state=42)
+sgd_clf.fit(X_train, y_train_5)
+
+# 숫자 5인지 추측
+print(sgd_clf.predict([some_digit]))
+
+# 3.3 성능 측정
+from sklearn.model_selection import StratifiedKFold
+from sklearn.base import clone
+
+skfolds = StratifiedKFold(n_splits=3, random_state=42, shuffle=True)
+
+for train_index, test_index in skfolds.split(X_train, y_train_5):
+    clone_clf = clone(sgd_clf)
+    X_train_folds = X_train[train_index]
+    y_train_folds = y_train_5[train_index]
+    X_test_fold = X_train[test_index]
+    y_test_fold = y_train_5[test_index]
+
+    clone_clf.fit(X_train_folds, y_train_folds)
+    y_pred = clone_clf.predict(X_test_fold)
+    n_correct = sum(y_pred == y_test_fold)
+    print(n_correct / len(y_pred))

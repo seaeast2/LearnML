@@ -2,6 +2,7 @@
 
 # 무작위로 선형 데이터 생성
 import numpy as np
+
 X = 2 * np.random.rand(100, 1)
 y = 4 + 3 * X + np.random.randn(100, 1)
 
