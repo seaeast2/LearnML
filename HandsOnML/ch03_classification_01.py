@@ -45,19 +45,37 @@ sgd_clf.fit(X_train, y_train_5)
 print(sgd_clf.predict([some_digit]))
 
 # 3.3 성능 측정
-from sklearn.model_selection import StratifiedKFold
-from sklearn.base import clone
+# from sklearn.model_selection import StratifiedKFold
+# from sklearn.base import clone
 
-skfolds = StratifiedKFold(n_splits=3, random_state=42, shuffle=True)
+# skfolds = StratifiedKFold(n_splits=3, random_state=42, shuffle=True)
 
-for train_index, test_index in skfolds.split(X_train, y_train_5):
-    clone_clf = clone(sgd_clf)
-    X_train_folds = X_train[train_index]
-    y_train_folds = y_train_5[train_index]
-    X_test_fold = X_train[test_index]
-    y_test_fold = y_train_5[test_index]
+# for train_index, test_index in skfolds.split(X_train, y_train_5): # split() 함수를 통하여 훈련 세트를 세 개의 폴드로 나눔
+#     clone_clf = clone(sgd_clf)
+#     X_train_folds = X_train[train_index]
+#     y_train_folds = y_train_5[train_index]
+#     X_test_fold = X_train[test_index]
+#     y_test_fold = y_train_5[test_index]
 
-    clone_clf.fit(X_train_folds, y_train_folds)
-    y_pred = clone_clf.predict(X_test_fold)
-    n_correct = sum(y_pred == y_test_fold)
-    print(n_correct / len(y_pred))
+#     clone_clf.fit(X_train_folds, y_train_folds) # 모델을 훈련
+#     y_pred = clone_clf.predict(X_test_fold)
+#     n_correct = sum(y_pred == y_test_fold)
+#     print(n_correct / len(y_pred))
+    
+from sklearn.model_selection import cross_val_score
+# print(cross_val_score(sgd_clf, X_train, y_train_5, cv=3, scoring="accuracy"))
+
+# 5 아님 더미 분류기 만들기
+from sklearn.base import BaseEstimator
+
+class Never5Classifier(BaseEstimator):
+    def fit(self, X, y=None):
+        return self
+    
+    def predict(self, X):
+        return np.zeros((len(X), 1), dtype=bool)
+    
+never_5_clf = Never5Classifier()
+print(cross_val_score(never_5_clf, X_train, y_train_5, cv=3, scoring="accuracy"))
+
+# 3.3.2 오차 행렬
