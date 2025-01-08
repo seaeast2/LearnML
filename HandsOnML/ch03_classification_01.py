@@ -79,3 +79,10 @@ never_5_clf = Never5Classifier()
 print(cross_val_score(never_5_clf, X_train, y_train_5, cv=3, scoring="accuracy"))
 
 # 3.3.2 오차 행렬
+from sklearn.model_selection import cross_val_predict
+y_train_pred = cross_val_predict(sgd_clf, X_train, y_train_5, cv=3)
+
+from sklearn.metrics import confusion_matrix
+print(confusion_matrix(y_train_5, y_train_pred))
+
+# 3.3.3 정밀도와 재현율
