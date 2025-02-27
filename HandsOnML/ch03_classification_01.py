@@ -86,3 +86,13 @@ from sklearn.metrics import confusion_matrix
 print(confusion_matrix(y_train_5, y_train_pred))
 
 # 3.3.3 정밀도와 재현율
+from sklearn.metrics import precision_score, recall_score
+# precision_score() : 분류 모델의 성능을 평가
+print(precision_score(y_train_5, y_train_pred)) # == 4344 / (4344 + 1307)
+# recall_score() : 분류 모델의 성능을 평가
+print(recall_score(y_train_5, y_train_pred)) # == 4344 / (4344 + 1077)
+
+# F1 점수 : 정밀도와 재현율의 조화평균(harmonic mean)
+from sklearn.metrics import f1_score
+print(f1_score(y_train_5, y_train_pred))
+
